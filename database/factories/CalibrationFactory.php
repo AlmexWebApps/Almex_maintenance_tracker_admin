@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
+use App\Models\CatalogItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Calibration>
- */
 class CalibrationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
+    public function definition(): array {
+        $fecha = $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d');
         return [
-            //
+            'catalog_item_id' => CatalogItem::factory(),
+            'fecha_calibracion' => $fecha,
+            'responsable' => $this->faker->name(),
+            'reporte' => 'REP-'.$this->faker->unique()->numerify('#####'),
+            'resultados' => 'k=2, ±0.5%',
+            'adecuado' => true,
+            'fecha_proxima' => date('Y-m-d', strtotime($fecha.' +6 months')),
+            'fecha_maxima'  => date('Y-m-d', strtotime($fecha.' +7 months')),
         ];
     }
 }

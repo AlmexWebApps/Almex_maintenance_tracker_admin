@@ -2,47 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreCalibrationRequest;
+use App\Http\Requests\UpdateCalibrationRequest;
+use App\Http\Resources\CalibrationResource;
+use App\Models\CatalogItem;
+use App\Models\Calibration;
 
 class CalibrationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function store(StoreCalibrationRequest $request, CatalogItem $catalogItem) {
+        $cal = $catalogItem->calibrations()->create($request->validated());
+        return (new CalibrationResource($cal->fresh()))->response()->setStatusCode(201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function update(UpdateCalibrationRequest $request, CatalogItem $catalogItem, Calibration $calibration) {
+        abort_unless($calibration->catalog_item_id === $catalogItem->id, 404);
+        $calibration->update($request->validated());
+        return new CalibrationResource($calibration->fresh());
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+    public function destroy(CatalogItem $catalogItem, Calibration $calibration) {
+        abort_unless($calibration->catalog_item_id === $catalogItem->id, 404);
+        $calibration->delete();
+        return response()->noContent();
     }
 }

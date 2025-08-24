@@ -2,16 +2,19 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\CatalogItem;
+use App\Models\Calibration;
 use Illuminate\Database\Seeder;
 
 class CatalogItemSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        CatalogItem::factory()->count(2)->create()
+            ->each(function ($item) {
+                Calibration::factory()->count(2)->create([
+                    'catalog_item_id' => $item->id
+                ]);
+            });
     }
 }

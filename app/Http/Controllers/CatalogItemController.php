@@ -2,48 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCatalogItemRequest;
+use App\Http\Requests\UpdateCatalogItemRequest;
+use App\Http\Resources\CatalogItemResource;
 use App\Models\CatalogItem;
-use Illuminate\Http\Request;
 
 class CatalogItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function index() {
+        $items = CatalogItem::query()
+            ->when(request('tipo_item'), fn($q,$v)=>$q->where('tipo_item',$v))
+            ->orderBy('codigo')
+            ->paginate(20);
+        return CatalogItemResource::collection($items);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function store(StoreCatalogItemRequest $request) {
+        $item = CatalogItem::create($request->validated());
+        return (new CatalogItemResource($item))->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CatalogItem $catalogItem)
-    {
-        //
+    public function show(CatalogItem $catalogItem) {
+        $catalogItem->load('calibrations');
+        return new CatalogItemResource($catalogItem);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CatalogItem $catalogItem)
-    {
-        //
+    public function update(UpdateCatalogItemRequest $request, CatalogItem $catalogItem) {
+        $catalogItem->update($request->validated());
+        return new CatalogItemResource($catalogItem->fresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CatalogItem $catalogItem)
-    {
-        //
+    public function destroy(CatalogItem $catalogItem) {
+        $catalogItem->delete();
+        return response()->noContent();
     }
 }
