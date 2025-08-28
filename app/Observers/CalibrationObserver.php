@@ -22,6 +22,7 @@ class CalibrationObserver
             $item->ult_reporte        = $ultima->reporte;
             $item->ult_resultados     = $ultima->resultados;
             $item->ult_adecuado_uso   = $ultima->adecuado;
+            $item->ult_observaciones  = $ultima->observaciones;
             $item->ult_dias_retraso   = $ultima->fecha_maxima
                 ? Carbon::now()->startOfDay()->diffInDays($ultima->fecha_maxima, false)
                 : null;

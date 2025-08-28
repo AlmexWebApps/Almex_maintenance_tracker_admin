@@ -15,6 +15,7 @@ class CalibrationResource extends JsonResource
             'responsable' => $this->responsable,
             'reporte' => $this->reporte,
             'resultados' => $this->resultados,
+            'observaciones' => $this->observaciones,
             'adecuado' => $this->adecuado,
             'fecha_proxima' => optional($this->fecha_proxima)->toDateString(),
             'fecha_maxima' => optional($this->fecha_maxima)->toDateString(),

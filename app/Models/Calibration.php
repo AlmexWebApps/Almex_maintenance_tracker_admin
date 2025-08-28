@@ -11,7 +11,7 @@ class Calibration extends Model
 
     protected $fillable = [
         'catalog_item_id','fecha_calibracion','responsable','reporte',
-        'resultados','adecuado','fecha_proxima','fecha_maxima'
+        'resultados','observaciones','adecuado','fecha_proxima','fecha_maxima'
     ];
 
     protected $casts = [
