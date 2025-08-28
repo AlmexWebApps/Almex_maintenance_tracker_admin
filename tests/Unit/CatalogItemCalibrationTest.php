@@ -1,25 +1,20 @@
 <?php
 
 use App\Enums\ItemType;
-use App\Models\CatalogItem;
 use App\Models\Calibration;
+use App\Models\CatalogItem;
 use Database\Seeders\CatalogItemSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 
-uses(RefreshDatabase::class);
 
-it('catalog item has many calibrations', function () {
-    seed(CatalogItemSeeder::class);
-
+test('catalog item has many calibrations', function () {
+    $this->seed(CatalogItemSeeder::class);
     $item = CatalogItem::first();
-
     expect($item->calibrations)->toHaveCount(2);
 });
 
 it('calibration belongs to catalog item', function () {
     $calibration = Calibration::factory()->create();
-
     expect($calibration->item)->toBeInstanceOf(CatalogItem::class);
 });
 

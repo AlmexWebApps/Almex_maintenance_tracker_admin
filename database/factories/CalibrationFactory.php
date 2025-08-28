@@ -15,6 +15,7 @@ class CalibrationFactory extends Factory
             'responsable' => $this->faker->name(),
             'reporte' => 'REP-'.$this->faker->unique()->numerify('#####'),
             'resultados' => 'k=2, ±0.5%',
+            'observaciones' => $this->faker->sentence(),
             'adecuado' => true,
             'fecha_proxima' => date('Y-m-d', strtotime($fecha.' +6 months')),
             'fecha_maxima'  => date('Y-m-d', strtotime($fecha.' +7 months')),

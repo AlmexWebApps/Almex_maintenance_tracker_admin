@@ -5,10 +5,9 @@ use App\Models\Calibration;
 use Database\Seeders\CatalogItemSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
 
 it('performs full CRUD for catalog items', function () {
-    seed(CatalogItemSeeder::class);
+    $this->seed(CatalogItemSeeder::class);
 
     $data = CatalogItem::factory()->make()->toArray();
 

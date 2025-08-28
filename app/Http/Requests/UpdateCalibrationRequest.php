@@ -14,6 +14,7 @@ class UpdateCalibrationRequest extends FormRequest
             'responsable'       => ['nullable','string','max:120'],
             'reporte'           => ['nullable','string','max:120'],
             'resultados'        => ['nullable','string'],
+            'observaciones'     => ['nullable','string'],
             'adecuado'          => ['boolean'],
             'fecha_proxima'     => ['nullable','date'],
             'fecha_maxima'      => ['nullable','date','after_or_equal:fecha_calibracion'],
