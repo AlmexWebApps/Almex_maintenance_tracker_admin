@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     ports:
-      - "8000:80"
+      - "8010:80"
     environment:
       - APP_ENV=${APP_ENV:-production}
       - APP_DEBUG=${APP_DEBUG:-false}
@@ -40,7 +40,7 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3339:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:
