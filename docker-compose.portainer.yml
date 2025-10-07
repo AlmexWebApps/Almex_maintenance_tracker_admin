@@ -2,10 +2,8 @@ version: "3.9"
 
 services:
   app:
-    # En Swarm no se permite build; usa una imagen publicada
-    image: your-registry/almex-admin-php:dev   # ⬅️ REEMPLAZA por tu imagen
-    container_name: null
-    env_file: []     # anula el env_file del base
+    image: your-registry/almex-admin-php:dev   # ⬅️ REEMPLAZA por tu imagen publicada
+    env_file: []   # anula el env_file del base
     secrets:
       - source: almex-maintenance_tracker_admin-env-dev
         target: /run/secrets/app_env
@@ -20,14 +18,12 @@ services:
         max_attempts: 10
 
   queue:
-    image: your-registry/almex-admin-php:dev   # ⬅️ misma imagen PHP
-    container_name: null
+    image: your-registry/almex-admin-php:dev
     env_file: []
     secrets:
       - source: almex-maintenance_tracker_admin-env-dev
         target: /run/secrets/app_env
         mode: 0440
-    # el command ya viene del base (php artisan queue:work ...)
     depends_on:
       - mysql
       - redis
@@ -38,14 +34,12 @@ services:
         max_attempts: 10
 
   scheduler:
-    image: your-registry/almex-admin-php:dev   # ⬅️ misma imagen PHP
-    container_name: null
+    image: your-registry/almex-admin-php:dev
     env_file: []
     secrets:
       - source: almex-maintenance_tracker_admin-env-dev
         target: /run/secrets/app_env
         mode: 0440
-    # el command ya viene del base (schedule:run cada 60s)
     depends_on:
       - mysql
     deploy:
@@ -55,7 +49,6 @@ services:
         max_attempts: 10
 
   web:
-    container_name: null
     depends_on:
       - app
     deploy:
@@ -63,7 +56,6 @@ services:
         condition: any
 
   npm:
-    container_name: null
     depends_on:
       - app
     deploy:
@@ -71,13 +63,11 @@ services:
         condition: any
 
   mysql:
-    container_name: null
     deploy:
       restart_policy:
         condition: any
 
   redis:
-    container_name: null
     deploy:
       restart_policy:
         condition: any
