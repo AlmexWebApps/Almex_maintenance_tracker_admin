@@ -1,40 +1,91 @@
+version: '3.8'
+
 services:
   app:
-    container_name: null          # evita nombre fijo en Portainer
-    env_file: []                  # anula el env_file del base
-    secrets:
-      - source: almex-maintenance_tracker_admin-env-dev
-        target: /run/secrets/app_env
-        mode: 0440
-
-  queue:
-    container_name: null
-    env_file: []
-    secrets:
-      - source: almex-maintenance_tracker_admin-env-dev
-        target: /run/secrets/app_env
-        mode: 0440
-
-  scheduler:
-    container_name: null
-    env_file: []
-    secrets:
-      - source: almex-maintenance_tracker_admin-env-dev
-        target: /run/secrets/app_env
-        mode: 0440
-
-  web:
-    container_name: null
-
-  npm:
-    container_name: null
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.prod
+    container_name: almex_app_prod
+    restart: always
+    ports:
+      - "${APP_PORT:-80}:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    env_file:
+      - .env.production
+    networks:
+      - almex_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   mysql:
-    container_name: null
+    image: mysql:8.0
+    container_name: almex_mysql_prod
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ./backups:/backups
+    networks:
+      - almex_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   redis:
-    container_name: null
+    image: redis:7-alpine
+    container_name: almex_redis_prod
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - almex_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-secrets:
-  almex-maintenance_tracker_admin-env-dev:
-    external: true
+networks:
+  almex_network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
