@@ -49,6 +49,7 @@ services:
         max_attempts: 10
 
   web:
+    image: nginx:alpine
     depends_on:
       - app
     deploy:
