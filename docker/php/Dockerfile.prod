@@ -1,0 +1,85 @@
+# Stage 1: Build frontend assets
+FROM node:20-alpine AS node-builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+RUN npm run build
+
+# Stage 2: PHP Dependencies
+FROM composer:2 AS composer-builder
+
+WORKDIR /app
+
+COPY composer*.json ./
+RUN composer install \
+--no-dev \
+--no-scripts \
+--no-autoloader \
+--prefer-dist \
+--optimize-autoloader
+
+COPY . .
+RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
+
+# Stage 3: PHP Application
+FROM php:8.2-fpm-alpine
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache \
+curl \
+libpng \
+oniguruma \
+libxml2 \
+libzip \
+mysql-client \
+supervisor \
+nginx
+
+# Instalar extensiones PHP
+RUN apk add --no-cache --virtual .build-deps \
+libpng-dev \
+oniguruma-dev \
+libxml2-dev \
+libzip-dev \
+$PHPIZE_DEPS \
+&& docker-php-ext-configure zip \
+&& docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache zip \
+&& pecl install redis \
+&& docker-php-ext-enable redis \
+&& apk del .build-deps
+
+# Copiar configuraciones
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
+
+WORKDIR /var/www/html
+
+# Copiar vendor desde composer-builder
+COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
+
+# Copiar aplicación
+COPY --chown=www-data:www-data . .
+
+# Copiar assets compilados
+COPY --from=node-builder --chown=www-data:www-data /app/public/build ./public/build
+
+# Optimizaciones Laravel para producción
+RUN php artisan config:cache \
+&& php artisan route:cache \
+&& php artisan view:cache \
+&& php artisan event:cache
+
+# Establecer permisos
+RUN chown -R www-data:www-data /var/www/html \
+&& chmod -R 755 /var/www/html/storage \
+&& chmod -R 755 /var/www/html/bootstrap/cache
+
+EXPOSE 80
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

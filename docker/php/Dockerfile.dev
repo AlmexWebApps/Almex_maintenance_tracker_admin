@@ -1,0 +1,44 @@
+FROM php:8.2-fpm-alpine
+
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    mysql-client \
+    linux-headers \
+    $PHPIZE_DEPS
+
+# Instalar extensiones PHP
+RUN docker-php-ext-configure zip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache zip
+
+# Instalar Redis extension
+RUN pecl install redis xdebug \
+    && docker-php-ext-enable redis
+
+# Instalar Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Crear usuario con mismo UID/GID que el host para evitar problemas de permisos
+RUN addgroup -g ${GROUP_ID} appgroup || true \
+    && adduser -D -u ${USER_ID} -G appgroup appuser || true
+
+WORKDIR /var/www/html
+
+# Cambiar permisos
+RUN chown -R appuser:appgroup /var/www/html
+
+USER appuser
+
+EXPOSE 9000
+
+CMD ["php-fpm"]
