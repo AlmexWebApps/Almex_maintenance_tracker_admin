@@ -43,6 +43,9 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 # Copy application files
 COPY . .
 
+# Crear .env desde .env.example si no existe
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
 # Copy built assets from node-builder
 COPY --from=node-builder /app/public/build /var/www/html/public/build
 
