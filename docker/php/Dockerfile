@@ -24,23 +24,19 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy PHP config
 COPY docker/nginx/php_ini_settings.ini /usr/local/etc/php/conf.d/custom.ini
-COPY docker/php/www_configuration.ini /usr/local/etc/php-fpm.d/www.conf
+
+# Copy PHP-FPM pool configuration if needed
+# NOTA: Comentamos esta línea porque www_configuration.ini no es un formato válido para www.conf
+# COPY docker/php/www_configuration.ini /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www/html
 
-# Copy composer files first (for better caching)
-COPY composer.json composer.lock ./
+# Set permissions for www-data user
+RUN chown -R www-data:www-data /var/www/html
 
-# Install dependencies (this layer will be cached)
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+# Cambiar al usuario www-data
+USER www-data
 
-# Copy application files
-COPY . .
+EXPOSE 9000
 
-# Generate optimized autoload
-RUN composer dump-autoload --optimize
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+CMD ["php-fpm"]
