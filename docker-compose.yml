@@ -21,10 +21,8 @@ services:
         networks:
             - almex_network
         depends_on:
-            mysql:
-                condition: service_healthy
-            redis:
-                condition: service_healthy
+            - mysql
+            - redis
 
     web:
         image: nginx:1.27-alpine
@@ -127,10 +125,8 @@ services:
         networks:
             - almex_network
         depends_on:
-            mysql:
-                condition: service_healthy
-            redis:
-                condition: service_healthy
+            - mysql
+            - redis
         healthcheck:
             test: ["CMD", "ps", "aux", "|", "grep", "[q]ueue:work"]
             interval: 30s
@@ -156,8 +152,7 @@ services:
         networks:
             - almex_network
         depends_on:
-            mysql:
-                condition: service_healthy
+            - mysql
 
 networks:
     almex_network:
