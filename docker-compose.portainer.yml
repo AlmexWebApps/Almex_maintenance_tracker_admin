@@ -79,6 +79,7 @@ services:
       <<: *laravel_env
       PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
     volumes:
+      - app-code:/var/www/html
       - app-storage:/var/www/html/storage
     networks:
       - almex_network
@@ -97,6 +98,7 @@ services:
     ports:
       - "${APP_PORT:-8000}:80"
     volumes:
+      - app-code:/var/www/html:ro  # ← Leer código desde app
       - app-storage:/var/www/html/storage:rw
     networks:
       - almex_network
@@ -215,6 +217,8 @@ networks:
     driver: bridge
 
 volumes:
+  app-code:
+    driver: local
   app-storage:
     driver: local
   mysql-data:

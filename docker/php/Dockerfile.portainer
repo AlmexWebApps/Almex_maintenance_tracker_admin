@@ -1,57 +1,79 @@
+# ========================================
+# Stage 1: Composer Dependencies
+# ========================================
+FROM composer:2 AS composer-builder
+
+WORKDIR /app
+
+# Solo copiar archivos necesarios para composer (cache layer optimization)
+COPY composer.json composer.lock ./
+
+# Instalar dependencias (vendor/ se genera aquí)
+RUN composer install \
+    --no-dev \
+    --no-scripts \
+    --no-autoloader \
+    --prefer-dist \
+    --optimize-autoloader
+
+# Copiar el resto del código
+COPY . .
+
+# Generar autoload optimizado
+RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
+
+# ========================================
+# Stage 2: PHP Application
+# ========================================
 FROM php:8.2-fpm-alpine
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-# Instalar dependencias del sistema
+# Instalar dependencias del sistema (solo runtime, no dev)
 RUN apk add --no-cache \
-    git \
     curl \
+    libpng \
+    oniguruma \
+    libxml2 \
+    libzip \
+    mysql-client
+
+# Instalar extensiones PHP
+RUN apk add --no-cache --virtual .build-deps \
     libpng-dev \
     oniguruma-dev \
     libxml2-dev \
     libzip-dev \
-    zip \
-    unzip \
-    mysql-client \
     linux-headers \
-    $PHPIZE_DEPS
+    $PHPIZE_DEPS \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del .build-deps
 
-# Instalar extensiones PHP
-RUN docker-php-ext-configure zip \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache zip
-
-# Instalar Redis extension
-RUN pecl install redis \
-    && docker-php-ext-enable redis
-
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Crear usuario con mismo UID/GID que el host para evitar problemas de permisos
+# Crear usuario
 RUN addgroup -g ${GROUP_ID} appgroup || true \
     && adduser -D -u ${USER_ID} -G appgroup appuser || true
 
 WORKDIR /var/www/html
 
-# Copiar todo el código primero
+# ⭐ CLAVE: Copiar vendor/ YA INSTALADO desde el Stage 1
+COPY --from=composer-builder --chown=appuser:appgroup /app/vendor ./vendor
+
+# Copiar toda la aplicación
 COPY --chown=appuser:appgroup . .
 
-# Crear directorios necesarios si no existen
+# Crear directorios necesarios para Laravel
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && mkdir -p storage/logs \
-    && mkdir -p bootstrap/cache
+    && mkdir -p bootstrap/cache \
+    && chown -R appuser:appgroup /var/www/html \
+    && chmod -R 755 storage \
+    && chmod -R 755 bootstrap/cache
 
-# Cambiar permisos ANTES de instalar composer
-RUN chown -R appuser:appgroup /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Cambiar a usuario appuser ANTES de composer install
 USER appuser
-
-# Instalar dependencias como el usuario correcto
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 EXPOSE 9000
 
