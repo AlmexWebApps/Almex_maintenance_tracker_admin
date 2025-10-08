@@ -34,18 +34,24 @@ RUN addgroup -g ${GROUP_ID} appgroup || true \
 
 WORKDIR /var/www/html
 
-# ⚠️ SOLO para Portainer: Copiar código fuente
+# Copiar todo el código primero
 COPY --chown=appuser:appgroup . .
 
-# ⚠️ SOLO para Portainer: Instalar dependencias
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Crear directorios necesarios si no existen
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    && mkdir -p storage/logs \
+    && mkdir -p bootstrap/cache
 
-# Cambiar permisos
+# Cambiar permisos ANTES de instalar composer
 RUN chown -R appuser:appgroup /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
+# Cambiar a usuario appuser ANTES de composer install
 USER appuser
+
+# Instalar dependencias como el usuario correcto
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 EXPOSE 9000
 
