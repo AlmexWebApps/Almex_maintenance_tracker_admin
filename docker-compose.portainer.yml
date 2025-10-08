@@ -68,7 +68,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile.dev
+      dockerfile: docker/php/Dockerfile.portainer
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
@@ -78,12 +78,8 @@ services:
     environment:
       <<: *laravel_env
       PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
-    # ⚠️ En Portainer (deploy desde Git) evita este bind:
-    # volumes:
-    #   - ./:/var/www/html
     volumes:
-      - php-vendor:/var/www/html/vendor
-      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+      - app-storage:/var/www/html/storage
     networks:
       - almex_network
     depends_on:
@@ -93,18 +89,15 @@ services:
         condition: service_healthy
 
   web:
-    image: nginx:1.27-alpine
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
     container_name: ${DOCKER_WEB_CONTAINER:-almex_web}
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8000}:80"
-    # ⚠️ Si NO montas el código, agrega un volume con el build output o COPY en tu imagen PHP
-    # volumes:
-    #   - ./:/var/www/html:ro
     volumes:
-      - ../storage:/var/www/html/storage:rw
-      - ../docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ../docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - app-storage:/var/www/html/storage:rw
     networks:
       - almex_network
     depends_on:
@@ -117,16 +110,17 @@ services:
       start_period: 10s
 
   npm:
-    image: node:20-alpine
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.portainer
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: ${DOCKER_VITE_CONTAINER:-almex_vite}
     working_dir: /var/www/html
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
     ports:
       - "${VITE_PORT:-5173}:5173"
-    # volumes:
-    #   - ./:/var/www/html
-    volumes:
-      - node_modules:/var/www/html/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       VITE_APP_NAME: ${VITE_APP_NAME}
@@ -146,7 +140,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-almex}
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     networks:
       - almex_network
     healthcheck:
@@ -174,7 +167,7 @@ services:
   queue:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile.dev
+      dockerfile: docker/php/Dockerfile.portainer
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
@@ -184,10 +177,6 @@ services:
     command: php artisan queue:work --sleep=${QUEUE_SLEEP:-3} --tries=${QUEUE_TRIES:-3} --max-time=${QUEUE_MAX_TIME:-3600} --timeout=${QUEUE_TIMEOUT:-300}
     environment:
       <<: *laravel_env
-    # volumes:
-    #   - ./:/var/www/html
-    volumes:
-      - php-vendor:/var/www/html/vendor
     networks:
       - almex_network
     depends_on:
@@ -204,7 +193,7 @@ services:
   scheduler:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile.dev
+      dockerfile: docker/php/Dockerfile.portainer
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
@@ -214,10 +203,6 @@ services:
     command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
     environment:
       <<: *laravel_env
-    # volumes:
-    #   - ./:/var/www/html
-    volumes:
-      - php-vendor:/var/www/html/vendor
     networks:
       - almex_network
     depends_on:
@@ -230,9 +215,7 @@ networks:
     driver: bridge
 
 volumes:
-  php-vendor:
-    driver: local
-  node_modules:
+  app-storage:
     driver: local
   mysql-data:
     driver: local
