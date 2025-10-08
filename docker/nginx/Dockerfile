@@ -1,9 +1,13 @@
-# ... (después de la línea COPY docker/php/php.ini)
 
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+FROM nginx:1.27-alpine
 
-# ... (resto del archivo)
+# Copiar archivos de configuración
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
-# Cambiar el CMD por:
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# Crear directorio para logs si no existe
+RUN mkdir -p /var/log/nginx
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
