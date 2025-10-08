@@ -102,9 +102,9 @@ services:
     # volumes:
     #   - ./:/var/www/html:ro
     volumes:
-      - ./storage:/var/www/html/storage:rw
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../storage:/var/www/html/storage:rw
+      - ../docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - almex_network
     depends_on:
