@@ -226,6 +226,7 @@ services:
 
 networks:
   almex_network:
+    name: almex_network
     driver: bridge
 
 volumes:
