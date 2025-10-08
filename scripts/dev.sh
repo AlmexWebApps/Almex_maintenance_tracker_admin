@@ -40,5 +40,5 @@ echo -e "${GREEN}🔐 Configurando permisos...${NC}"
 docker-compose exec app chmod -R 775 storage bootstrap/cache
 
 echo -e "${GREEN}✅ Entorno de desarrollo listo!${NC}"
-echo -e "${GREEN}📍 Aplicación: http://localhost:8000${NC}"
+echo -e "${GREEN}📍 Aplicación: http://localhost:8083${NC}"
 echo -e "${GREEN}📍 Vite: http://localhost:5173${NC}"
