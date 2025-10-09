@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Calibration\CalibrationEditScreen;
+use App\Orchid\Screens\Calibration\CalibrationListScreen;
 use App\Orchid\Screens\Examples\ExampleActionsScreen;
 use App\Orchid\Screens\Examples\ExampleCardsScreen;
 use App\Orchid\Screens\Examples\ExampleChartsScreen;
@@ -11,6 +13,8 @@ use App\Orchid\Screens\Examples\ExampleGridScreen;
 use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
+use App\Orchid\Screens\Items\CatalogItemEditScreen;
+use App\Orchid\Screens\Items\CatalogItemListScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -102,3 +106,25 @@ Route::screen('/examples/charts', ExampleChartsScreen::class)->name('platform.ex
 Route::screen('/examples/cards', ExampleCardsScreen::class)->name('platform.example.cards');
 
 // Route::screen('idea', Idea::class, 'platform.screens.idea');
+
+
+
+// Listado de ítems (ya lo tienes)
+Route::screen('catalog-items', CatalogItemListScreen::class)
+    ->name('platform.catalog_items');
+
+Route::screen('catalog-items/create', CatalogItemEditScreen::class)
+    ->name('platform.catalog_items.create');
+
+Route::screen('catalog-items/{catalogItem}', CatalogItemEditScreen::class)
+    ->name('platform.catalog_items.edit');
+
+// === Calibrations nested ===
+Route::screen('catalog-items/{catalogItem}/calibrations', CalibrationListScreen::class)
+    ->name('platform.catalog_items.calibrations');
+
+Route::screen('catalog-items/{catalogItem}/calibrations/create', CalibrationEditScreen::class)
+    ->name('platform.catalog_items.calibrations.create');
+
+Route::screen('catalog-items/{catalogItem}/calibrations/{calibration}', CalibrationEditScreen::class)
+    ->name('platform.catalog_items.calibrations.edit');

@@ -2,26 +2,43 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Orchid\Screen\AsSource;
+use Orchid\Filters\Filterable;
 
 class Calibration extends Model
 {
-    use HasFactory;
+    use AsSource, Filterable;
 
     protected $fillable = [
-        'catalog_item_id','fecha_calibracion','responsable','reporte',
-        'resultados','observaciones','adecuado','fecha_proxima','fecha_maxima'
+        'catalog_item_id',
+        'fecha_calibracion',
+        'responsable',
+        'reporte',
+        'resultados',
+        'observaciones',
+        'adecuado',
+        'fecha_proxima',
+        'fecha_maxima',
     ];
 
     protected $casts = [
         'fecha_calibracion' => 'date',
         'fecha_proxima'     => 'date',
         'fecha_maxima'      => 'date',
-        'adecuado'          => 'boolean',
+        'adecuado'          => 'bool',
     ];
 
-    public function item() {
-        return $this->belongsTo(CatalogItem::class, 'catalog_item_id');
+    protected $allowedSorts = [
+        'fecha_calibracion','fecha_proxima','fecha_maxima','adecuado'
+    ];
+
+    protected $allowedFilters = [
+        'responsable','reporte','adecuado'
+    ];
+
+    public function catalogItem()
+    {
+        return $this->belongsTo(CatalogItem::class);
     }
 }
