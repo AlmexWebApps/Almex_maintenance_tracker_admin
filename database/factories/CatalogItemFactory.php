@@ -14,13 +14,13 @@ class CatalogItemFactory extends Factory
             'equipo' => strtoupper($this->faker->bothify('FT-????')),
             'marca' => $this->faker->company(),
             'modelo' => $this->faker->bothify('####????'),
-            'requiere_calibracion' => true,
-            'tipo' => 'NO_CRITICO',
-            'estado' => 'BAJA',
-            'emt_valor' => 1.0000,
+            'requiere_calibracion' => $this->faker->randomElement([true,false]),
+            'tipo' => $this->faker->randomElement(['NO_CRITICO','CRITICO']),
+            'estado' => $this->faker->randomElement(['BAJA','ALTA']),
+            'emt_valor' => rand(0.0001,999.0000),
             'emt_unidad' => 'psi',
             'emt_simetrico' => true,
-            'ubicacion' => 'Caldera No.1',
+            'ubicacion' => 'Caldera No.'.rand(1,10),
             'forma' => 'Instrumento Electrónico',
         ];
     }

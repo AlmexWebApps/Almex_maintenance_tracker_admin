@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Screen\AsSource;
 use Orchid\Filters\Filterable;
 
 class Calibration extends Model
 {
-    use AsSource, Filterable;
-
+    use AsSource, Filterable,HasFactory;
     protected $fillable = [
         'catalog_item_id',
         'fecha_calibracion',
@@ -37,7 +37,8 @@ class Calibration extends Model
         'responsable','reporte','adecuado'
     ];
 
-    public function catalogItem()
+    // App\Models\Calibration.php
+    public function item()
     {
         return $this->belongsTo(CatalogItem::class);
     }
