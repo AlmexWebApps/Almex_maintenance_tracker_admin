@@ -5,11 +5,9 @@ namespace App\Orchid\Screens\Items;
 use App\Models\CatalogItem;
 use App\Models\Calibration;
 use Orchid\Screen\Screen;
-use Orchid\Support\Facades\Layout;     // Facade con ::rows(), ::legend(), ::tabs(), etc.
-use Orchid\Screen\Layouts\Legend;      // Layout de solo lectura
-use Orchid\Screen\Layouts\Table;       // Layout de tabla
-use Orchid\Screen\Sight;               // Campos de Legend
-use Orchid\Screen\TD;                  // Columnas de Table
+use Orchid\Support\Facades\Layout;
+use Orchid\Screen\Sight;
+use Orchid\Screen\TD;
 use Orchid\Screen\Actions\Link;
 
 class CatalogItemShowScreen extends Screen
@@ -88,18 +86,83 @@ class CatalogItemShowScreen extends Screen
                     Sight::make('ult_observaciones', 'Observaciones')
             ]),
             Layout::table('calibrations', [
-                TD::make('fecha_calibracion', 'Fecha Cal.')->sort(),
-                TD::make('responsable', 'Responsable'),
-                TD::make('reporte', 'Reporte/Folio'),
-                TD::make('adecuado', 'Adecuado')->render(fn (Calibration $c) => $c->adecuado ? 'Sí' : 'No'),
-                TD::make('fecha_proxima', 'Próxima'),
-                TD::make('fecha_maxima', 'Máxima'),
-                TD::make('Acciones')->alignRight()->render(function (Calibration $c) {
-                    return Link::make('Editar')
-                        ->icon('pencil')
-                        ->route('platform.catalog_items.calibrations.edit', [$c->catalog_item_id, $c->id]);
-                }),
-            ])
+                TD::make('fecha_calibracion', 'Fecha Cal.')
+                    ->sort()
+                    ->render(function (Calibration $c) {
+                        if (!$c->fecha_calibracion) return '<span class="text-muted">—</span>';
+                        $d = $c->fecha_calibracion;
+                        return sprintf(
+                            '<div class="text-center">
+                        %s<br><small class="text-muted">%s</small>
+                    </div>',
+                            e($d->format('Y-m-d')),
+                            e($d->diffForHumans())
+                        );
+                    })
+                    ->alignCenter(),
+
+                TD::make('responsable', 'Responsable')
+                    ->render(fn (Calibration $c) => e($c->responsable ?: '—')),
+
+                TD::make('reporte', 'Reporte/Folio')
+                    ->render(fn (Calibration $c) => e($c->reporte ?: '—')),
+
+                TD::make('adecuado', 'Adecuado')
+                    ->render(fn (Calibration $c) =>
+                    $c->adecuado
+                        ? '<span class="badge bg-success">Sí</span>'
+                        : '<span class="badge bg-danger">No</span>'
+                    )
+                    ->alignCenter(),
+
+                TD::make('fecha_proxima', 'Próxima')
+                    ->render(function (Calibration $c) {
+                        if (!$c->fecha_proxima) return '<span class="text-muted">—</span>';
+                        $d = $c->fecha_proxima;
+                        $days = now()->diffInDays($d, false);
+                        $badge = $days < 0
+                            ? '<span class="badge bg-danger">Vencida</span>'
+                            : ($days <= 7
+                                ? '<span class="badge bg-warning text-dark">Próxima</span>'
+                                : '<span class="badge bg-success">OK</span>');
+                        return sprintf(
+                            '<div class="text-center">
+                        %s<br><small class="text-muted">%s</small><div>%s</div>
+                    </div>',
+                            e($d->format('Y-m-d')),
+                            e($d->diffForHumans()),
+                            $badge
+                        );
+                    })
+                    ->alignCenter(),
+
+                TD::make('fecha_maxima', 'Máxima')
+                    ->render(function (Calibration $c) {
+                        if (!$c->fecha_maxima) return '<span class="text-muted">—</span>';
+                        $d = $c->fecha_maxima;
+                        $overdue = now()->greaterThan($d);
+                        return sprintf(
+                            '<div class="text-center">
+                                        %s<br><small class="text-muted">%s</small><div>%s</div>
+                                    </div>',
+                            e($d->format('Y-m-d')),
+                            e($d->diffForHumans()),
+                            $overdue
+                                ? '<span class="badge bg-danger">Fuera de rango</span>'
+                                : '<span class="badge bg-success">Dentro de rango</span>'
+                        );
+                    })
+                    ->alignCenter(),
+
+                TD::make('Acciones')
+                    ->alignRight()
+                    ->render(function (Calibration $c) {
+                        return Link::make('Editar')
+                            ->icon('pencil')
+                            ->route('platform.catalog_items.calibrations.edit', [$c->catalog_item_id, $c->id])
+                            ->class('btn btn-sm btn-outline-primary');
+                    }),
+            ]),
         ];
     }
 }

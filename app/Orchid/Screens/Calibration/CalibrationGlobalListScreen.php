@@ -4,9 +4,9 @@ namespace App\Orchid\Screens\Calibration;
 
 use App\Models\Calibration;
 use App\Models\CatalogItem;
-use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Layout;
 use Orchid\Screen\TD;
-use Orchid\Screen\Layouts\Table;
+use Orchid\Screen\Screen;
 use Orchid\Screen\Actions\Link;
 
 class CalibrationGlobalListScreen extends Screen
@@ -36,54 +36,99 @@ class CalibrationGlobalListScreen extends Screen
     public function layout(): array
     {
         return [
-            new class extends Table {
-                protected $target = 'calibrations';
+            Layout::table('calibrations', [
+                TD::make('catalog_item_id', 'Ítem')
+                    ->render(function (Calibration $c) {
+                        $item = $c->catalogItem;
+                        if (!$item) return '—';
+                        return Link::make("{$item->codigo} · {$item->equipo}")
+                            ->route('platform.catalog_items.edit', $item->id);
+                    })
+                    ->width('200px'),
 
-                protected function columns(): array
-                {
-                    return [
-                        TD::make('catalog_item_id', 'Ítem')
-                            ->render(function (Calibration $c) {
-                                /** @var CatalogItem|null $item */
-                                $item = $c->catalogItem;
-                                if (!$item) return '—';
-                                return Link::make("{$item->codigo} · {$item->equipo}")
-                                    ->route('platform.catalog_items.edit', $item->id);
-                            })
-                            ->width('300px'),
+                TD::make('fecha_calibracion', 'Fecha Cal.')
+                    ->sort()
+                    // Cambiamos el filtro de calendario por texto:
+                    ->filter(TD::FILTER_TEXT)
+                    ->render(function (Calibration $c) {
+                        $d = $c->fecha_calibracion;
+                        return $d
+                            ? sprintf('<div>%s <br><small class="text-muted">%s</small></div>',
+                                e($d->format('Y-m-d')),
+                                e($d->diffForHumans()))
+                            : '—';
+                    })
+                    ->alignCenter()
+                    ->width('130px'),
 
-                        TD::make('fecha_calibracion', 'Fecha Cal.')
-                            ->sort()
-                            ->filter(TD::FILTER_DATE),
+                TD::make('responsable', 'Responsable')
+                    ->filter(TD::FILTER_TEXT),
 
-                        TD::make('responsable', 'Responsable')
-                            ->filter(),
+                TD::make('reporte', 'Reporte/Folio')
+                    ->defaultHidden(),
 
-                        TD::make('reporte', 'Reporte/Folio')
-                            ->defaultHidden(),
+                TD::make('adecuado', 'Adecuado')
+                    ->sort()
+                    ->render(fn (Calibration $c) =>
+                    $c->adecuado
+                        ? '<span class="badge bg-success">Sí</span>'
+                        : '<span class="badge bg-danger">No</span>'
+                    )
+                    ->filter(TD::FILTER_TEXT)
+                    ->alignCenter(),
 
-                        TD::make('adecuado', 'Adecuado')
-                            ->sort()
-                            ->render(fn (Calibration $c) => $c->adecuado ? 'Sí' : 'No')
-                            ->filter(TD::FILTER_TEXT),
+                TD::make('fecha_proxima', 'Próxima')
+                    ->sort()
+                    // Texto en lugar de calendario:
+                    ->filter(TD::FILTER_TEXT)
+                    ->render(function (Calibration $c) {
+                        $d = $c->fecha_proxima;
+                        if (!$d) return '—';
+                        // Etiqueta de estado simple
+                        $days = now()->diffInDays($d, false); // negativo si ya pasó
+                        $badge = $days < 0
+                            ? '<span class="badge bg-danger">Vencida</span>'
+                            : ($days <= 7
+                                ? '<span class="badge bg-warning">Próxima</span>'
+                                : '<span class="badge bg-success">OK</span>');
+                        return sprintf(
+                            '<div>%s <small class="text-muted">%s</small><div>%s</div></div>',
+                            e($d->format('Y-m-d')),
+                            e($d->diffForHumans()),
+                            $badge
+                        );
+                    })
+                    ->width('130px')
+                    ->alignCenter(),
 
-                        TD::make('fecha_proxima', 'Próxima')
-                            ->sort()
-                            ->filter(TD::FILTER_DATE),
+                TD::make('fecha_maxima', 'Máxima')
+                    ->sort()
+                    ->filter(TD::FILTER_TEXT)
+                    ->render(function (Calibration $c) {
+                        $d = $c->fecha_maxima;
+                        if (!$d) return '—';
+                        $overdue = now()->greaterThan($d);
+                        return sprintf(
+                            '<div>%s <small class="text-muted">%s</small><div>%s</div></div>',
+                            e($d->format('Y-m-d')),
+                            e($d->diffForHumans()),
+                            $overdue
+                                ? '<span class="badge bg-danger">Fuera de rango</span>'
+                                : '<span class="badge bg-success">Dentro de rango</span>'
+                        );
+                    })
+                    ->width('130px')
+                    ->alignCenter(),
 
-                        TD::make('fecha_maxima', 'Máxima')
-                            ->sort()
-                            ->filter(TD::FILTER_DATE),
-
-                        TD::make('Acciones')->alignRight()->render(function (Calibration $c) {
-                            return Link::make('Editar')
-                                ->icon('pencil')
-                                // Reutilizamos el screen anidado para editar:
-                                ->route('platform.catalog_items.calibrations.edit', [$c->catalog_item_id, $c->id]);
-                        }),
-                    ];
-                }
-            },
+                TD::make('Acciones')
+                    ->alignRight()
+                    ->render(function (Calibration $c) {
+                        return Link::make('Editar')
+                            ->icon('pencil')
+                            ->route('platform.catalog_items.calibrations.edit', [$c->catalog_item_id, $c->id]);
+                    }),
+            ])
         ];
+
     }
 }
