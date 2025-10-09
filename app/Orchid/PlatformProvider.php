@@ -39,6 +39,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route('platform.catalog_items')
                 ->title('Catalogo de Instrumentos'),
 
+            Menu::make('Calibraciones')
+                ->icon('wrench')
+                ->route('platform.calibrations')
+                ->title('Mantenimiento'),
+
             Menu::make('Get Started')
                 ->icon('bs.book')
                 ->title('Navigation')

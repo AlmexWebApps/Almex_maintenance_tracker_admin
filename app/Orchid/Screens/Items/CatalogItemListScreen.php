@@ -41,7 +41,7 @@ class CatalogItemListScreen extends Screen
                     return [
                         TD::make('codigo','Código')->sort()->filter()->render(function (CatalogItem $i) {
                             return Link::make($i->codigo)
-                                ->route('platform.catalog_items.edit', $i->id);
+                                ->route('platform.catalog_items.view', $i->id);
                         }),
                         TD::make('equipo','Equipo')->sort()->filter(),
                         TD::make('marca','Marca')->filter(),
