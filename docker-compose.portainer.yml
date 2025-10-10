@@ -83,6 +83,7 @@ services:
       - app-storage:/var/www/html/storage
     networks:
       - almex_network
+      - shared_almex_network
 
   web:
     build:
@@ -97,6 +98,7 @@ services:
       - app-storage:/var/www/html/storage:rw
     networks:
       - almex_network
+      - shared_almex_network
     depends_on:
       - app
     healthcheck:
@@ -123,6 +125,7 @@ services:
       VITE_APP_NAME: ${VITE_APP_NAME}
     networks:
       - almex_network
+      - shared_almex_network
     depends_on:
       - app
 
@@ -141,6 +144,7 @@ services:
       <<: *laravel_env
     networks:
       - almex_network
+      - shared_almex_network
     depends_on:
       - app
     healthcheck:
@@ -164,6 +168,7 @@ services:
       <<: *laravel_env
     networks:
       - almex_network
+      - shared_almex_network
     depends_on:
       - app
 
