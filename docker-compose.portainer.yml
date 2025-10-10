@@ -83,11 +83,6 @@ services:
       - app-storage:/var/www/html/storage
     networks:
       - almex_network
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
 
   web:
     build:
@@ -98,7 +93,7 @@ services:
     ports:
       - "${APP_PORT:-8083}:80"
     volumes:
-      - app-code:/var/www/html:ro  # ← Leer código desde app
+      - app-code:/var/www/html:ro
       - app-storage:/var/www/html/storage:rw
     networks:
       - almex_network
@@ -131,41 +126,6 @@ services:
     depends_on:
       - app
 
-  mysql:
-    image: mysql:8.0
-    container_name: ${DOCKER_MYSQL_CONTAINER:-almex_mysql}
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-almex_maintenance_tracker_admin}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret}
-      MYSQL_USER: ${DB_USERNAME:-almex}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-almex}
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - almex_network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-secret}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  redis:
-    image: redis:7-alpine
-    container_name: ${DOCKER_REDIS_CONTAINER:-almex_redis}
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secret}
-    volumes:
-      - redis-data:/data
-    networks:
-      - almex_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   queue:
     build:
       context: .
@@ -182,10 +142,7 @@ services:
     networks:
       - almex_network
     depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - app
     healthcheck:
       test: ["CMD", "ps", "aux", "|", "grep", "[q]ueue:work"]
       interval: 30s
@@ -208,8 +165,7 @@ services:
     networks:
       - almex_network
     depends_on:
-      mysql:
-        condition: service_healthy
+      - app
 
 networks:
   almex_network:
@@ -220,8 +176,4 @@ volumes:
   app-code:
     driver: local
   app-storage:
-    driver: local
-  mysql-data:
-    driver: local
-  redis-data:
     driver: local
