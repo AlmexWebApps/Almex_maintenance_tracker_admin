@@ -171,6 +171,9 @@ networks:
   almex_network:
     name: almex_network
     driver: bridge
+  shared_almex_network:
+    external: true
+    name: shared_network
 
 volumes:
   app-code:
