@@ -6,13 +6,12 @@ use App\Models\CatalogItem;
 use App\Models\Calibration;
 use Illuminate\Database\Seeder;
 
-class CatalogItemSeeder extends Seeder
+class CalibrationSeeder extends Seeder
 {
     public function run(): void
     {
-        CatalogItem::factory()
-            ->has(Calibration::factory()->count(2), 'calibrations') // 👈 usa 'calibrations'
-            ->count(100)
+        Calibration::factory()
+            ->for(CatalogItem::factory(), 'item') // 👈 relación belongsTo del hijo
             ->create();
     }
 }

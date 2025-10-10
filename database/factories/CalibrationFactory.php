@@ -10,7 +10,7 @@ class CalibrationFactory extends Factory
     public function definition(): array {
         $fecha = $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d');
         return [
-            'catalog_item_id' => CatalogItem::factory(),
+            //'catalog_item_id' => CatalogItem::factory(),
             'fecha_calibracion' => $fecha,
             'responsable' => $this->faker->name(),
             'reporte' => 'REP-'.$this->faker->unique()->numerify('#####'),

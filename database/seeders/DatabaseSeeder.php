@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
-        //$this->call(\Database\Seeders\CatalogItemSeeder::class);
+        $this->call(OrchidUseAndRolesSeeder::class);
+        $this->call(CatalogItemSeeder::class);
     }
 }
 
