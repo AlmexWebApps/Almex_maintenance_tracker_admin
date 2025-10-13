@@ -18,7 +18,7 @@ class CalibrationGlobalListScreen extends Screen
     {
         return [
             'calibrations' => Calibration::query()
-                ->with('catalogItem')
+                ->with('item')
                 ->defaultSort('fecha_calibracion', 'desc')
                 ->paginate(),
         ];
@@ -37,12 +37,12 @@ class CalibrationGlobalListScreen extends Screen
     {
         return [
             Layout::table('calibrations', [
-                TD::make('catalog_item_id', 'Ítem')
+                TD::make('item_id', 'Item')
                     ->render(function (Calibration $c) {
-                        $item = $c->catalogItem;
+                        $item = $c->item;
                         if (!$item) return '—';
                         return Link::make("{$item->codigo} · {$item->equipo}")
-                            ->route('platform.catalog_items.edit', $item->id);
+                            ->route('platform.catalog_items.view', $item->id);
                     })
                     ->width('200px'),
 

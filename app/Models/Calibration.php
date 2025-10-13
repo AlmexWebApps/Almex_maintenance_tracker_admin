@@ -40,6 +40,6 @@ class Calibration extends Model
     // App\Models\Calibration.php
     public function item()
     {
-        return $this->belongsTo(CatalogItem::class);
+        return $this->belongsTo(CatalogItem::class, 'catalog_item_id');
     }
 }
