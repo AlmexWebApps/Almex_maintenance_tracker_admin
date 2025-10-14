@@ -3,15 +3,15 @@
 namespace App\Orchid\Screens\Items;
 
 use App\Models\CatalogItem;
-use Orchid\Screen\Screen;
 use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Layouts\Table;
+use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 
 class CatalogItemListScreen extends Screen
 {
     public $name = 'Catálogo de Instrumentos';
+
     public $description = 'Gestión de instrumentos/planos';
 
     public function query(): array
@@ -26,14 +26,15 @@ class CatalogItemListScreen extends Screen
         return [
             Link::make('Nuevo')
                 ->icon('plus')
-                ->route('platform.catalog_items.create')
+                ->route('platform.catalog_items.create'),
         ];
     }
 
     public function layout(): array
     {
         return [
-            new class extends Table {
+            new class extends Table
+            {
                 protected $target = 'items';
 
                 protected function columns(): array
@@ -63,9 +64,9 @@ class CatalogItemListScreen extends Screen
                             ->filter()
                             ->render(function (CatalogItem $i) {
                                 return match ($i->estado) {
-                                    'ALTA'  => '<span class="badge bg-danger">Alta</span>',
+                                    'ALTA' => '<span class="badge bg-danger">Alta</span>',
                                     'MEDIA' => '<span class="badge bg-warning text-dark">Media</span>',
-                                    'BAJA'  => '<span class="badge bg-success">Baja</span>',
+                                    'BAJA' => '<span class="badge bg-success">Baja</span>',
                                     default => '<span class="badge bg-secondary">—</span>',
                                 };
                             })
@@ -90,7 +91,7 @@ class CatalogItemListScreen extends Screen
                         TD::make('ult_fecha_proxima', 'Próxima Cal.')
                             ->sort()
                             ->render(function (CatalogItem $i) {
-                                if (!$i->ult_fecha_proxima) {
+                                if (! $i->ult_fecha_proxima) {
                                     return '<span class="text-muted">—</span>';
                                 }
 
@@ -123,7 +124,7 @@ class CatalogItemListScreen extends Screen
                                     Link::make('Editar')
                                         ->icon('pencil')
                                         ->route('platform.catalog_items.edit', $i->id)
-                                        ->class('btn btn-sm btn-outline-primary') .
+                                        ->class('btn btn-sm btn-outline-primary').
                                     '</div>';
                             }),
                     ];
@@ -133,4 +134,3 @@ class CatalogItemListScreen extends Screen
         ];
     }
 }
-

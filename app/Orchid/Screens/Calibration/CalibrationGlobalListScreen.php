@@ -4,14 +4,15 @@ namespace App\Orchid\Screens\Calibration;
 
 use App\Models\Calibration;
 use App\Models\CatalogItem;
-use Orchid\Support\Facades\Layout;
-use Orchid\Screen\TD;
-use Orchid\Screen\Screen;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Screen;
+use Orchid\Screen\TD;
+use Orchid\Support\Facades\Layout;
 
 class CalibrationGlobalListScreen extends Screen
 {
     public $name = 'Calibraciones (Global)';
+
     public $description = 'Todas las calibraciones registradas en el sistema';
 
     public function query(): array
@@ -40,7 +41,10 @@ class CalibrationGlobalListScreen extends Screen
                 TD::make('item_id', 'Item')
                     ->render(function (Calibration $c) {
                         $item = $c->item;
-                        if (!$item) return '—';
+                        if (! $item) {
+                            return '—';
+                        }
+
                         return Link::make("{$item->codigo} · {$item->equipo}")
                             ->route('platform.catalog_items.view', $item->id);
                     })
@@ -52,6 +56,7 @@ class CalibrationGlobalListScreen extends Screen
                     ->filter(TD::FILTER_TEXT)
                     ->render(function (Calibration $c) {
                         $d = $c->fecha_calibracion;
+
                         return $d
                             ? sprintf('<div>%s <br><small class="text-muted">%s</small></div>',
                                 e($d->format('Y-m-d')),
@@ -69,8 +74,7 @@ class CalibrationGlobalListScreen extends Screen
 
                 TD::make('adecuado', 'Adecuado')
                     ->sort()
-                    ->render(fn (Calibration $c) =>
-                    $c->adecuado
+                    ->render(fn (Calibration $c) => $c->adecuado
                         ? '<span class="badge bg-success">Sí</span>'
                         : '<span class="badge bg-danger">No</span>'
                     )
@@ -83,7 +87,9 @@ class CalibrationGlobalListScreen extends Screen
                     ->filter(TD::FILTER_TEXT)
                     ->render(function (Calibration $c) {
                         $d = $c->fecha_proxima;
-                        if (!$d) return '—';
+                        if (! $d) {
+                            return '—';
+                        }
                         // Etiqueta de estado simple
                         $days = now()->diffInDays($d, false); // negativo si ya pasó
                         $badge = $days < 0
@@ -91,6 +97,7 @@ class CalibrationGlobalListScreen extends Screen
                             : ($days <= 7
                                 ? '<span class="badge bg-warning">Próxima</span>'
                                 : '<span class="badge bg-success">OK</span>');
+
                         return sprintf(
                             '<div>%s <small class="text-muted">%s</small><div>%s</div></div>',
                             e($d->format('Y-m-d')),
@@ -106,8 +113,11 @@ class CalibrationGlobalListScreen extends Screen
                     ->filter(TD::FILTER_TEXT)
                     ->render(function (Calibration $c) {
                         $d = $c->fecha_maxima;
-                        if (!$d) return '—';
+                        if (! $d) {
+                            return '—';
+                        }
                         $overdue = now()->greaterThan($d);
+
                         return sprintf(
                             '<div>%s <small class="text-muted">%s</small><div>%s</div></div>',
                             e($d->format('Y-m-d')),
@@ -127,7 +137,7 @@ class CalibrationGlobalListScreen extends Screen
                             ->icon('pencil')
                             ->route('platform.catalog_items.calibrations.edit', [$c->catalog_item_id, $c->id]);
                     }),
-            ])
+            ]),
         ];
 
     }

@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Orchid\Screen\AsSource;
 use Orchid\Filters\Filterable;
+use Orchid\Screen\AsSource;
 
 class Calibration extends Model
 {
     use AsSource, Filterable,HasFactory;
+
     protected $fillable = [
         'catalog_item_id',
         'fecha_calibracion',
@@ -24,17 +25,17 @@ class Calibration extends Model
 
     protected $casts = [
         'fecha_calibracion' => 'date',
-        'fecha_proxima'     => 'date',
-        'fecha_maxima'      => 'date',
-        'adecuado'          => 'bool',
+        'fecha_proxima' => 'date',
+        'fecha_maxima' => 'date',
+        'adecuado' => 'bool',
     ];
 
     protected $allowedSorts = [
-        'fecha_calibracion','fecha_proxima','fecha_maxima','adecuado'
+        'fecha_calibracion', 'fecha_proxima', 'fecha_maxima', 'adecuado',
     ];
 
     protected $allowedFilters = [
-        'responsable','reporte','adecuado'
+        'responsable', 'reporte', 'adecuado',
     ];
 
     // App\Models\Calibration.php

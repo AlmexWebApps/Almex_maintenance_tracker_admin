@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use Orchid\Platform\Models\Role;
 
 class OrchidUseAndRolesSeeder extends Seeder
@@ -34,7 +34,7 @@ class OrchidUseAndRolesSeeder extends Seeder
         );
 
         // Asignar rol de administrador
-        if (!$user->hasAccess('platform.index')) {
+        if (! $user->hasAccess('platform.index')) {
             $user->addRole($adminRole);
         }
     }

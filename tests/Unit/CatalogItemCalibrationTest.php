@@ -6,7 +6,6 @@ use App\Models\CatalogItem;
 use Database\Seeders\CatalogItemSeeder;
 use Illuminate\Support\Carbon;
 
-
 test('catalog item has many calibrations', function () {
     $this->seed(CatalogItemSeeder::class);
     $item = CatalogItem::first();

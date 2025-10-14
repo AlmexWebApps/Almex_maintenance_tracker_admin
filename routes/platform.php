@@ -15,8 +15,8 @@ use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 use App\Orchid\Screens\Items\CatalogItemEditScreen;
-use App\Orchid\Screens\Items\CatalogItemShowScreen;
 use App\Orchid\Screens\Items\CatalogItemListScreen;
+use App\Orchid\Screens\Items\CatalogItemShowScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -109,8 +109,6 @@ Route::screen('/examples/cards', ExampleCardsScreen::class)->name('platform.exam
 
 // Route::screen('idea', Idea::class, 'platform.screens.idea');
 
-
-
 // Listado de ítems (ya lo tienes)
 Route::screen('catalog-items', CatalogItemListScreen::class)
     ->name('platform.catalog_items');
@@ -121,10 +119,8 @@ Route::screen('catalog-items/create', CatalogItemEditScreen::class)
 Route::screen('catalog-items/{catalogItem}', CatalogItemEditScreen::class)
     ->name('platform.catalog_items.edit');
 
-
 Route::screen('catalog-items/{catalogItem}/view', CatalogItemShowScreen::class)
     ->name('platform.catalog_items.view');
-
 
 // === Calibrations ===
 Route::screen('calibrations', CalibrationGlobalListScreen::class)

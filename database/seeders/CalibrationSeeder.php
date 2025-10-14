@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\CatalogItem;
 use App\Models\Calibration;
+use App\Models\CatalogItem;
 use Illuminate\Database\Seeder;
 
 class CalibrationSeeder extends Seeder

@@ -2,18 +2,19 @@
 
 namespace App\Orchid\Screens\Calibration;
 
-use App\Models\CatalogItem;
 use App\Models\Calibration;
+use App\Models\CatalogItem;
+use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
-use Orchid\Screen\Layouts\Table;
-use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Actions\Button;
 
 class CalibrationListScreen extends Screen
 {
     public $name = 'Calibraciones';
+
     public $description = 'Histórico de calibraciones del equipo';
+
     private CatalogItem $catalogItem;
 
     public function query(CatalogItem $catalogItem): array
@@ -22,10 +23,9 @@ class CalibrationListScreen extends Screen
         $this->name = "Calibraciones: {$catalogItem->codigo}";
 
         return [
-            'catalogItem'  => $catalogItem,
+            'catalogItem' => $catalogItem,
             'calibrations' => $catalogItem->calibrations()
-                ->filters()
-                ->defaultSort('fecha_calibracion','desc')
+                ->defaultSort('fecha_calibracion', 'desc')
                 ->paginate(),
         ];
     }
@@ -46,30 +46,31 @@ class CalibrationListScreen extends Screen
     public function layout(): array
     {
         return [
-            new class extends Table {
+            new class extends Table
+            {
                 protected $target = 'calibrations';
 
                 protected function columns(): array
                 {
                     return [
-                        TD::make('fecha_calibracion','Fecha Cal.')
+                        TD::make('fecha_calibracion', 'Fecha Cal.')
                             ->sort(),
 
-                        TD::make('responsable','Responsable')
+                        TD::make('responsable', 'Responsable')
                             ->filter()
                             ->render(fn (Calibration $c) => e($c->responsable ?: '—')),
 
-                        TD::make('reporte','Reporte')
+                        TD::make('reporte', 'Reporte')
                             ->render(fn (Calibration $c) => e($c->reporte ?: '—')),
 
-                        TD::make('adecuado','Adecuado')
+                        TD::make('adecuado', 'Adecuado')
                             ->render(fn (Calibration $c) => $c->adecuado ? 'Sí' : 'No')
                             ->sort(),
 
-                        TD::make('fecha_proxima','Próxima')
+                        TD::make('fecha_proxima', 'Próxima')
                             ->sort(),
 
-                        TD::make('fecha_maxima','Máxima')
+                        TD::make('fecha_maxima', 'Máxima')
                             ->sort(),
 
                         TD::make('Acciones')->render(function (Calibration $c) {
@@ -83,4 +84,3 @@ class CalibrationListScreen extends Screen
         ];
     }
 }
-

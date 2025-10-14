@@ -1,10 +1,8 @@
 <?php
 
-use App\Models\CatalogItem;
 use App\Models\Calibration;
+use App\Models\CatalogItem;
 use Database\Seeders\CatalogItemSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 
 it('performs full CRUD for catalog items', function () {
     $this->seed(CatalogItemSeeder::class);

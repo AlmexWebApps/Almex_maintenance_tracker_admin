@@ -2,28 +2,28 @@
 
 namespace App\Orchid\Screens\Calibration;
 
-use App\Models\CatalogItem;
 use App\Models\Calibration;
+use App\Models\CatalogItem;
 use Illuminate\Http\Request;
-use Orchid\Screen\Screen;
-use Orchid\Support\Facades\Layout;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\DateTimer;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Switcher;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
 class CalibrationEditScreen extends Screen
 {
+    //http://127.0.0.1:8000/admin/catalog-items/1/calibrations/1
     public $name = 'Nueva Calibración';
+
     public $exists = false;
-    private CatalogItem $catalogItem;
 
     public function query(CatalogItem $catalogItem, Calibration $calibration): array
     {
-        $this->catalogItem = $catalogItem;
-        $this->exists      = $calibration->exists;
+        $this->exists = $calibration->exists;
 
         $this->name = $this->exists
             ? "Editar Calibración: {$catalogItem->codigo}"
@@ -32,7 +32,7 @@ class CalibrationEditScreen extends Screen
         return [
             'catalogItem' => $catalogItem,
             'calibration' => $calibration,
-            'calibrations' => $calibration->toArray(), // para binding con campos
+            'calibrations' => $calibration->toArray(),
         ];
     }
 
@@ -97,22 +97,23 @@ class CalibrationEditScreen extends Screen
     public function save(CatalogItem $catalogItem, Calibration $calibration, Request $request)
     {
         $validated = $request->validate([
-            'calibrations.fecha_calibracion' => ['required','date'],
-            'calibrations.responsable'       => ['nullable','string'],
-            'calibrations.reporte'           => ['nullable','string'],
-            'calibrations.resultados'        => ['nullable','string'],
-            'calibrations.adecuado'          => ['boolean'],
-            'calibrations.fecha_proxima'     => ['nullable','date'],
-            'calibrations.fecha_maxima'      => ['nullable','date'],
+            'calibrations.fecha_calibracion' => ['required', 'date'],
+            'calibrations.responsable' => ['nullable', 'string'],
+            'calibrations.reporte' => ['nullable', 'string'],
+            'calibrations.resultados' => ['nullable', 'string'],
+            'calibrations.adecuado' => ['boolean'],
+            'calibrations.fecha_proxima' => ['nullable', 'date'],
+            'calibrations.fecha_maxima' => ['nullable', 'date'],
         ]);
 
         $data = $validated['calibrations'] + [
-                'catalog_item_id' => $catalogItem->id,
-            ];
+            'catalog_item_id' => $catalogItem->id,
+        ];
 
         $calibration->fill($data)->save();
 
         Toast::info('Calibración guardada correctamente.');
+
         return redirect()->route('platform.catalog_items.calibrations', $catalogItem->id);
     }
 
@@ -120,6 +121,7 @@ class CalibrationEditScreen extends Screen
     {
         $calibration->delete();
         Toast::info('Calibración eliminada.');
+
         return redirect()->route('platform.catalog_items.calibrations', $catalogItem->id);
     }
 
