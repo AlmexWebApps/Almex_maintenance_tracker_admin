@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->string('department')->nullable();
             $table->string('location')->nullable();
-            $table->enum('form', ['Intrumento Electronico', 'Intrumento Simple'])->default('Intrumento Simple');
+            $table->enum('form', ['Intrumento Electronico', 'Instrumento Mecánico','Intrumento Simple'])->default('Intrumento Simple');
 
             $table->enum('Variable Unidad De Medida', ['Concentración', 'Flujo', 'Humedad', 'Indice de Refracción', 'KVA', 'MVP', 'N/A', 'Peso', 'Presión', 'Temperatura', 'Transmitancia', 'pH'])->default('N/A')->nullable();
             // ⁉️ traslate
@@ -37,17 +37,17 @@ return new class extends Migration
 
             // Snapshot de calibración
             $table->date('last_calibration_date')->nullable();
-            $table->date('last_calibration_user')->nullable();
+            $table->string('last_calibration_user')->nullable();
             $table->date('next_calibration_date')->nullable();
 
             // Snapshot de verificacion
             $table->date('last_validation_date')->nullable();
-            $table->date('last_validation_user')->nullable();
+            $table->string('last_validation_user')->nullable();
             $table->date('next_validation_date')->nullable();
 
             // Snapshot de Mantenimiento
             $table->date('last_maintenance_date')->nullable();
-            $table->date('last_maintenance_user')->nullable();
+            $table->string('last_maintenance_user')->nullable();
             $table->date('next_maintenance_date')->nullable();
 
             $table->boolean('is_operational')->nullable();

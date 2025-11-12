@@ -55,13 +55,40 @@ class InstrumentShowScreen extends Screen
 
             // 📅 Fechas de calibración, validación y mantenimiento
             Layout::legend('instrument', [
-                Sight::make('last_calibration_date', 'Última Calibración')->render(fn($i) => optional($i->last_calibration_date)->format('Y-m-d')),
-                Sight::make('next_calibration_date', 'Próxima Calibración')->render(fn($i) => optional($i->next_calibration_date)->format('Y-m-d')),
-                Sight::make('last_validation_date', 'Última Validación')->render(fn($i) => optional($i->last_validation_date)->format('Y-m-d')),
-                Sight::make('next_validation_date', 'Próxima Validación')->render(fn($i) => optional($i->next_validation_date)->format('Y-m-d')),
-                Sight::make('last_maintenance_date', 'Último Mantenimiento')->render(fn($i) => optional($i->last_maintenance_date)->format('Y-m-d')),
-                Sight::make('next_maintenance_date', 'Próximo Mantenimiento')->render(fn($i) => optional($i->next_maintenance_date)->format('Y-m-d')),
+                // 📅 Fechas de calibración
+                Sight::make('last_calibration_date', 'Última Calibración')
+                    ->render(fn($i) => $i->last_calibration_date
+                        ? $i->last_calibration_date->format('Y-m-d') .
+                        ($i->last_calibration_user ? ' — ' . e($i->last_calibration_user) : '')
+                        : 'Sin registro'),
+                Sight::make('next_calibration_date', 'Próxima Calibración')
+                    ->render(fn($i) => $i->next_calibration_date
+                        ? $i->next_calibration_date->format('Y-m-d')
+                        : '—'),
+                // 📅 Fechas de validación
+                Sight::make('last_validation_date', 'Última Validación')
+                    ->render(fn($i) => $i->last_validation_date
+                        ? $i->last_validation_date->format('Y-m-d') .
+                        ($i->last_validation_user ? ' — ' . e($i->last_validation_user) : '')
+                        : 'Sin registro'),
+
+                Sight::make('next_validation_date', 'Próxima Validación')
+                    ->render(fn($i) => $i->next_validation_date
+                        ? $i->next_validation_date->format('Y-m-d')
+                        : '—'),
+                // 📅 Fechas de mantenimiento
+                Sight::make('last_maintenance_date', 'Último Mantenimiento')
+                    ->render(fn($i) => $i->last_maintenance_date
+                        ? $i->last_maintenance_date->format('Y-m-d') .
+                        ($i->last_maintenance_user ? ' — ' . e($i->last_maintenance_user) : '')
+                        : 'Sin registro'),
+
+                Sight::make('next_maintenance_date', 'Próximo Mantenimiento')
+                    ->render(fn($i) => $i->next_maintenance_date
+                        ? $i->next_maintenance_date->format('Y-m-d')
+                        : '—'),
             ])->title('Resumen de Fechas'),
+
 
             // 📋 Tabla con historial de eventos
             Layout::table('instrument.events', [
