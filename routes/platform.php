@@ -14,8 +14,7 @@ use App\Orchid\Screens\Examples\ExampleGridScreen;
 use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
-use App\Orchid\Screens\InstrumentEvents\InstrumentEventCreateScreen;
-use App\Orchid\Screens\InstrumentEvents\InstrumentEventShowScreen;
+
 use App\Orchid\Screens\Items\CatalogItemEditScreen;
 use App\Orchid\Screens\Items\CatalogItemListScreen;
 use App\Orchid\Screens\Items\CatalogItemShowScreen;
@@ -36,6 +35,8 @@ use App\Orchid\Screens\Instruments\InstrumentShowScreen;
 // === Eventos de Instrumento (Calibración / Validación / Mantenimiento) ===
 use App\Orchid\Screens\InstrumentEvents\InstrumentEventListScreen;
 use App\Orchid\Screens\InstrumentEvents\InstrumentEventEditScreen;
+use App\Orchid\Screens\InstrumentEvents\InstrumentEventCreateScreen;
+use App\Orchid\Screens\InstrumentEvents\InstrumentEventShowScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -171,8 +172,12 @@ Route::screen('instruments/{instrument}/view', InstrumentShowScreen::class)
 Route::screen('instrument-events', InstrumentEventListScreen::class)
     ->name('platform.instrument_events.global');
 
-Route::screen('instrument-events/create', InstrumentEventCreateScreen::class)
+Route::screen('instrument-events/create', InstrumentEventEditScreen::class)
     ->name('platform.instrument_events.create');
+
+// ✏️ Editar un evento existente
+Route::screen('instruments/{instrument}/events/{instrumentEvent}', InstrumentEventEditScreen::class)
+    ->name('platform.instruments.events.edit');
 
 Route::screen('instrument-events/{instrumentEvent}/view', InstrumentEventShowScreen::class)
     ->name('platform.instrument_events.view');
@@ -185,6 +190,4 @@ Route::screen('instruments/{instrument}/events', InstrumentEventListScreen::clas
 Route::screen('instruments/{instrument}/events/create', InstrumentEventEditScreen::class)
     ->name('platform.instruments.events.create');
 
-// ✏️ Editar un evento existente
-Route::screen('instruments/{instrument}/events/{instrumentEvent}', InstrumentEventEditScreen::class)
-    ->name('platform.instruments.events.edit');
+
