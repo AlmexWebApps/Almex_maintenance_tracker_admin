@@ -14,6 +14,7 @@ use App\Orchid\Screens\Examples\ExampleGridScreen;
 use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
+
 use App\Orchid\Screens\Items\CatalogItemEditScreen;
 use App\Orchid\Screens\Items\CatalogItemListScreen;
 use App\Orchid\Screens\Items\CatalogItemShowScreen;
@@ -25,6 +26,17 @@ use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
+
+// === Instrumentos ===
+use App\Orchid\Screens\Instruments\InstrumentListScreen;
+use App\Orchid\Screens\Instruments\InstrumentEditScreen;
+use App\Orchid\Screens\Instruments\InstrumentShowScreen;
+
+// === Eventos de Instrumento (Calibración / Validación / Mantenimiento) ===
+use App\Orchid\Screens\InstrumentEvents\InstrumentEventListScreen;
+use App\Orchid\Screens\InstrumentEvents\InstrumentEventEditScreen;
+use App\Orchid\Screens\InstrumentEvents\InstrumentEventCreateScreen;
+use App\Orchid\Screens\InstrumentEvents\InstrumentEventShowScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,3 +147,47 @@ Route::screen('catalog-items/{catalogItem}/calibrations/create', CalibrationEdit
 
 Route::screen('catalog-items/{catalogItem}/calibrations/{calibration}', CalibrationEditScreen::class)
     ->name('platform.catalog_items.calibrations.edit');
+
+// -----------------------------------------------------
+// 📦 Catálogo de Instrumentos
+// -----------------------------------------------------
+
+Route::screen('instruments', InstrumentListScreen::class)
+    ->name('platform.instruments.list');
+
+Route::screen('instruments/create', InstrumentEditScreen::class)
+    ->name('platform.instruments.create');
+
+Route::screen('instruments/{instrument}', InstrumentEditScreen::class)
+    ->name('platform.instruments.edit');
+
+Route::screen('instruments/{instrument}/view', InstrumentShowScreen::class)
+    ->name('platform.instruments.view');
+
+// -----------------------------------------------------
+// ⚙️ Eventos de Instrumento (Global y Anidados)
+// -----------------------------------------------------
+
+// 🌍 Listado global de todos los eventos (calibraciones, validaciones, mantenimientos)
+Route::screen('instrument-events', InstrumentEventListScreen::class)
+    ->name('platform.instrument_events.global');
+
+Route::screen('instrument-events/create', InstrumentEventEditScreen::class)
+    ->name('platform.instrument_events.create');
+
+// ✏️ Editar un evento existente
+Route::screen('instruments/{instrument}/events/{instrumentEvent}', InstrumentEventEditScreen::class)
+    ->name('platform.instruments.events.edit');
+
+Route::screen('instrument-events/{instrumentEvent}/view', InstrumentEventShowScreen::class)
+    ->name('platform.instrument_events.view');
+
+// 📑 Listado de eventos de un instrumento específico
+Route::screen('instruments/{instrument}/events', InstrumentEventListScreen::class)
+    ->name('platform.instruments.events');
+
+// ➕ Crear evento para un instrumento
+Route::screen('instruments/{instrument}/events/create', InstrumentEventEditScreen::class)
+    ->name('platform.instruments.events.create');
+
+
