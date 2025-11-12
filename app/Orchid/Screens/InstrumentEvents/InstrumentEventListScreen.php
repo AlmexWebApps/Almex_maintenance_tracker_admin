@@ -43,7 +43,7 @@ class InstrumentEventListScreen extends Screen
                         default => $e->event_type,
                     })->route('platform.instrument_events.view', $e->id)),
 
-                //TD::make('instrument.code', 'Instrumento')->render(fn($e) => Link::make($e->instrument->code)->route('platform.instruments.show', $e->instrument->id)),
+                TD::make('instrument.code', 'Instrumento')->render(fn($e) => Link::make($e->instrument->code)->route('platform.instruments.view', $e->instrument->id)),
                 TD::make('fecha_evento', 'Fecha')->render(fn($e) => $e->fecha_evento->format('Y-m-d')),
                 TD::make('responsable', 'Responsable'),
                 TD::make('reporte', 'Reporte'),
