@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('calibrations', function (Blueprint $table) {
-            $table->text('observaciones')->nullable()->after('resultados');
-        });
+        //Schema::table('instrument_events', function (Blueprint $table) {
+        //    $table->text('observaciones')->nullable()->after('resultados');
+        //});
     }
 
     public function down(): void
     {
-        Schema::table('calibrations', function (Blueprint $table) {
-            $table->dropColumn('observaciones');
-        });
+        //Schema::table('calibrations', function (Blueprint $table) {
+        //    $table->dropColumn('observaciones');
+        //});
     }
 };
