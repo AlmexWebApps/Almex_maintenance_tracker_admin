@@ -8,35 +8,53 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('catalog_items', function (Blueprint $table) {
+        // INSTRUMENTO
+        Schema::create('intruments', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo')->unique();
-            $table->enum('tipo_item', ['INSTRUMENTO', 'PLANO']);
-            $table->string('equipo');
-            $table->string('marca')->nullable();
-            $table->string('modelo')->nullable();
-            $table->boolean('requiere_calibracion')->default(true);
-            $table->enum('tipo', ['NO_CRITICO', 'CRITICO'])->default('NO_CRITICO');
-            $table->enum('estado', ['BAJA', 'MEDIA', 'ALTA'])->default('BAJA');
-            $table->decimal('emt_valor', 12, 4)->nullable();
-            $table->string('emt_unidad')->nullable();
-            $table->boolean('emt_simetrico')->nullable();
-            $table->string('ubicacion')->nullable();
-            $table->string('forma')->nullable();
 
-            // Snapshot de última calibración
-            $table->date('ult_fecha_ultima')->nullable();
-            $table->date('ult_fecha_proxima')->nullable();
-            $table->date('ult_fecha_maxima')->nullable();
-            $table->integer('ult_dias_retraso')->nullable();
-            $table->string('ult_calibro')->nullable();
-            $table->string('ult_reporte')->nullable();
-            $table->text('ult_resultados')->nullable();
-            $table->boolean('ult_adecuado_uso')->nullable();
-            $table->text('ult_observaciones')->nullable();
+            $table->string('name')->nullable();
+            $table->enum('type', ['INSTRUMENTO', 'PLANO'])->default('INSTRUMENTO');
+
+            $table->string('department')->nullable();
+            $table->string('location')->nullable();
+            $table->enum('form', ['Intrumento Electronico', 'Intrumento Simple'])->default('Intrumento Simple');
+
+            $table->enum('Variable Unidad De Medida', ['Concentración', 'Flujo', 'Humedad', 'Indice de Refracción', 'KVA', 'MVP', 'N/A', 'Peso', 'Presión', 'Temperatura', 'Transmitancia', 'pH'])->default('N/A')->nullable();
+            // ⁉️ traslate
+            $table->string('equipo')->nullable(); // ⁉️ traslate
+            $table->string('brand')->nullable();
+            $table->string('model')->nullable();
+            $table->string('code')->unique();
+
+            $table->string('emt_value')->nullable();
+            $table->decimal('emt_value_decimal', 12, 4)->nullable();
+            $table->string('emt_unit')->nullable();
+            $table->boolean('emt_symmetry')->nullable()->default(false);
+
+            $table->string('file_manual')->default('N/A');
+            $table->enum('types_of_criticality', ['NO_CRITICO', 'CRITICO'])->default('NO_CRITICO');
+            $table->enum('level_of_criticality', ['BAJA', 'MEDIA', 'ALTA'])->default('BAJA');
+
+            // Snapshot de calibración
+            $table->date('last_calibration_date')->nullable();
+            $table->date('last_calibration_user')->nullable();
+            $table->date('next_calibration_date')->nullable();
+
+            // Snapshot de verificacion
+            $table->date('last_validation_date')->nullable();
+            $table->date('last_validation_user')->nullable();
+            $table->date('next_validation_date')->nullable();
+
+            // Snapshot de Mantenimiento
+            $table->date('last_maintenance_date')->nullable();
+            $table->date('last_maintenance_user')->nullable();
+            $table->date('next_maintenance_date')->nullable();
+
+            $table->boolean('is_operational')->nullable();
+            $table->text('observations')->nullable();
 
             $table->timestamps();
-            $table->index(['tipo_item', 'estado']);
+            $table->index(['name', 'type']);
         });
     }
 
