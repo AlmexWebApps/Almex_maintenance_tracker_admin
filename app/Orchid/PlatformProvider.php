@@ -30,15 +30,29 @@ class PlatformProvider extends OrchidServiceProvider
     public function menu(): array
     {
         return [
-            Menu::make('Catálogo de Instrumentos')
-                ->icon('wrench')
-                ->route('platform.catalog_items')
-                ->title('Catalogo de Instrumentos'),
+//            Menu::make('Catálogo de Instrumentos')
+//                ->icon('wrench')
+//                ->route('platform.catalog_items')
+//                ->title('Catalogo de Instrumentos'),
 
-            Menu::make('Calibraciones')
+//            Menu::make('Calibraciones')
+//                ->icon('wrench')
+//                ->route('platform.calibrations')
+//                ->title('Mantenimiento'),
+            Menu::make('Mantenimiento de Instrumentos')
                 ->icon('wrench')
-                ->route('platform.calibrations')
-                ->title('Mantenimiento'),
+                ->title('Instrumentos y Eventos')
+                ->list([
+                    Menu::make('Catálogo de Instrumentos')
+                        ->icon('layers')
+                        ->route('platform.instruments.list')
+                        ->badge(fn() => \App\Models\Instrument::count()),
+
+                    Menu::make('Eventos de Instrumentos')
+                        ->icon('clock')
+                        ->route('platform.instrument_events.global')
+                        ->badge(fn() => \App\Models\InstrumentEvent::count()),
+                ]),
 
             Menu::make('Get Started')
                 ->icon('bs.book')

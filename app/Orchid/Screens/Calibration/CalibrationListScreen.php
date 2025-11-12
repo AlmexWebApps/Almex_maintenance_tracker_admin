@@ -12,7 +12,6 @@ use Orchid\Screen\TD;
 class CalibrationListScreen extends Screen
 {
     public $name = 'Calibraciones';
-
     public $description = 'Histórico de calibraciones del equipo';
 
     private CatalogItem $catalogItem;

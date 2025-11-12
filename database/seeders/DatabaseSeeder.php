@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
-        $this->call(OrchidUseAndRolesSeeder::class);
-        $this->call(CatalogItemSeeder::class);
+        $this->call(InstrumentSeeder::class);
+        $this->call(InstrumentEventSeeder::class);
     }
 }
